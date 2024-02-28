@@ -1,7 +1,7 @@
 import style from './SearchBar.module.css';
 
 export const SearchBar = ({ onSubmit }) => {
-  const handleSubmit = async event => {
+  const handleSubmit = event => {
     event.preventDefault();
 
     onSubmit(event.target.elements[1].value);

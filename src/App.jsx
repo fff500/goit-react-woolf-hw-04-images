@@ -1,4 +1,4 @@
-import { Component } from 'react';
+import { useEffect, useState } from 'react';
 import { Audio } from 'react-loader-spinner';
 
 import { SearchBar } from 'components/SearchBar/SearchBar';
@@ -8,80 +8,67 @@ import { getImages } from 'helpers/api';
 
 import style from './App.module.css';
 
-export class App extends Component {
-  state = {
-    images: [],
-    page: 0,
-    isLoading: false,
-    searchQuery: '',
-    totalImages: 0,
+export const App = () => {
+  const [images, setImages] = useState([]);
+  const [page, setPage] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [totalImages, setTotalImages] = useState(0);
+
+  const hendleSearch = query => {
+    setImages([]);
+    setPage(1);
+    setSearchQuery(query);
   };
 
-  hendleSearch = async query => {
-    this.setState({
-      images: [],
-      page: 1,
-      isLoading: false,
-      searchQuery: query,
-      totalImages: 0,
-    });
+  const handleLoadMore = () => {
+    setPage(state => state + 1);
   };
 
-  handleLoadMore = async () => {
-    this.setState(state => ({
-      page: state.page + 1,
-    }));
-  };
-
-  async componentDidUpdate(_, state) {
-    if (this.state.page !== state.page || this.state.searchQuery !== state.searchQuery) {
-
-      this.setState({ isLoading: true });
-
+  useEffect(() => {
+    const loadImages = async () => {
+      setIsLoading(true);
       try {
         const {
           data: { hits, totalHits },
-        } = await getImages(this.state.searchQuery, this.state.page);
+        } = await getImages(searchQuery, page);
 
         const newImages = hits.map(({ id, webformatURL, largeImageURL }) => {
           return { id, webformatURL, largeImageURL };
         });
 
-        this.setState(state => ({
-          images: [...state.images, ...newImages],
-          totalImages: totalHits,
-        }));
-
+        setImages(state => [...state, ...newImages]);
+        setTotalImages(totalHits);
       } catch (error) {
         alert(error.response?.data || 'Something went wrong!');
       } finally {
-        this.setState({ isLoading: false });
+        setIsLoading(false);
       }
+    };
+
+    if (page && searchQuery) {
+      loadImages();
     }
-  }
+  }, [page, searchQuery]);
 
-  render() {
-    const { isLoading, page, images, totalImages } = this.state;
+  const showLoadMore = !isLoading && !!page && images.length < totalImages;
 
-    const showLoadMore = !isLoading && !!page && images.length < totalImages;
-
-    return (
-      <div className={style.App}>
-        <SearchBar onSubmit={this.hendleSearch} />
-        <ImageGallery images={images} />
-        {isLoading && (
-          <Audio
-            height="80"
-            width="80"
-            radius="9"
-            color="green"
-            ariaLabel="three-dots-loading"
-            wrapperStyle
-            wrapperClass
-          />
-        )}
-        {showLoadMore && <Button onClick={this.handleLoadMore} />}
-      </div>
-    );
-  }
-}
+  return (
+    <div className={style.App}>
+      <SearchBar onSubmit={hendleSearch} />
+      <ImageGallery images={images} />
+      {isLoading && (
+        <Audio
+          height="80"
+          width="80"
+          radius="9"
+          color="green"
+          ariaLabel="three-dots-loading"
+          wrapperStyle
+          wrapperClass
+        />
+      )}
+      {showLoadMore && <Button onClick={handleLoadMore} />}
+    </div>
+  );
+};
