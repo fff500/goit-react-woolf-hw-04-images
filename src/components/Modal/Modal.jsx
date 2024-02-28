@@ -13,7 +13,7 @@ export const Modal = ({ largeImageURL, toggleModal }) => {
     document.addEventListener('keydown', handleEscClick);
 
     return () => document.removeEventListener('keydown', handleEscClick);
-  }, []);
+  }, [handleEscClick]);
 
   const handleClick = event => {
     if (event.target === event.currentTarget) {
