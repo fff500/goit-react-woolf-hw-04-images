@@ -1,9 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Audio } from 'react-loader-spinner';
 
-import { SearchBar } from 'components/SearchBar/SearchBar';
-import { ImageGallery } from 'components/ImageGallery/ImageGallery';
-import { Button } from 'components/Button/Button';
+import { SearchBar, ImageGallery, Button } from 'components';
 import { getImages } from 'helpers/api';
 
 import style from './App.module.css';
