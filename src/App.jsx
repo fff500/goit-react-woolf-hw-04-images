@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Audio } from 'react-loader-spinner';
 
 import { SearchBar, ImageGallery, Button } from 'components';
@@ -13,15 +13,13 @@ export const App = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [totalImages, setTotalImages] = useState(0);
 
-  const hendleSearch = useCallback(query => {
+  const hendleSearch = query => {
     setImages([]);
     setPage(1);
     setSearchQuery(query);
-  }, [setImages, setPage, setSearchQuery]);
+  };
 
-  const handleLoadMore = useCallback(() => {
-    setPage(state => state + 1);
-  }, [setPage]);
+  const handleLoadMore = () => setPage(state => state + 1);
 
   useEffect(() => {
     const loadImages = async () => {
